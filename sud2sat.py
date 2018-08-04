@@ -18,13 +18,7 @@ def parsePuzzle(input_file):
 
     puzzle_string.replace('.', '0').replace('*', '0').replace('?', '0')
 
-    puzzle_array = [[0 for i in range(9)] for j in range(9)]
-
-    for i in range(9):
-        for j in range(9):
-            puzzle_array[i][j] = puzzle_string[i*9+j]
-
-    return puzzle_array
+    return puzzle_string
 
 #Converts base 9 ijk to base 10 + 1
 def base9To10(i,j,k):
@@ -36,8 +30,9 @@ def genInitialVars(puzzle):
     string = "(Initial Clauses)\n";
     for i in range(9):
         for j in range(9):
-            if puzzle[i][j] != '0':
-                string += str(base9To10(i,j,int(puzzle[i][j])-1)) + ' 0\n'
+            c = puzzle[i*9+j]
+            if c != '0':
+                string += str(base9To10(i,j,int(c)-1)) + ' 0\n'
                 n += 1
     return string
 
