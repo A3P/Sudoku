@@ -57,21 +57,39 @@ def genCellVars():
 def genRowVars():
     global n
     string = "(Row Clauses)\n"
-
+    for j in range(9):
+        for k in range(9):
+            for i in range(8):
+                for l in range(i+1,9):
+                    string += '-' + str(base9To10(i,j,k)) + " -" + str(base9To10(l,j,k)) + " 0\n"
+                    n += 1
     return string
 
 #Clauses ensuring uniqueness through columns
 def genColVars():
     global n
     string = "(Column Clauses)\n"
-
+    for i in range(9):
+        for k in range(9):
+            for j in range(8):
+                for l in range(j+1,9):
+                    string += '-' + str(base9To10(i,j,k)) + " -" + str(base9To10(i,l,k)) + " 0\n"
+                    n += 1
     return string
 
 #Clauses ensuring uniqueness through 3x3 sub-grids
 def genSubGridVars():
     global n
     string = "(Sub-Grid Clauses)\n"
-
+    for k in range(9): #number
+        for a in range(3): #grid - x
+            for b in range(3): #grid - y
+                for u in range(2): #cell - x
+                    for v in range(3): #cell - y
+                        for w in range(u+1,3): #check cell - x
+                            for t in range(3): #check cell - y
+                                string += '-' + str(base9To10(3*a+u,3*b+v,k)) + " -" + str(base9To10(3*a+w,3*b+t,k)) + " 0\n"
+                                n += 1
     return string
 
 def main():
