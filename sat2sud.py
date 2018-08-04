@@ -1,21 +1,57 @@
-#sat2sud reads the output produced by miniSAT for a given puzzle instance and converts it back into
-#a solved Sudoku puzzle (suitable for printing)
 import sys
 import os
-def genSudoku(s):
-	output_file = ''
-	for i in s.read().split(" "):
-	#Handling Exceptions
-		try:
-			if int(i) > 110:
-				if int(i[1]) == 0 or int(i[2]) == 0:
-					continue
-				output_file += i[2]
-				if (len(output_file) - output_file.count('\n')) % 9 == 0:
-					output += '\n'
-		except ValueError:
-			continue
-	print (output_file)
-f= open("miniSAT_Output.txt", "r")
-genSudoku(f)
-f.close() 
+
+def parseInput(input_file):
+    try:
+        open_file = open(input_file)
+    except:
+        print("Can't open " + input_file)
+        sys.exit(-1)
+
+    content = open_file.read().split()
+
+    if content[0] != "SAT":
+        print("No solution")
+        sys.exit(-1)
+
+    solution = []
+
+    for x in content:
+        if x.isdigit():
+            x = int(x)
+            if x > 0:
+                solution.append((x-1)%9+1)
+    return solution
+
+def printPuzzle(solution):
+    string = ''
+    for i in range(9):
+        if i % 3 == 0:
+            for k in range(13):
+                string += '-'
+            string += '\n'
+
+        for j in range(9):
+            if j % 3 == 0:
+                string += '|'
+            string += str(solution[i*9+j])
+        string += "|\n"
+
+    for k in range(13):
+        string += '-'
+
+    print (string)
+
+def main():
+    if len(sys.argv) < 1:
+        print("Provide an input file")
+        sys.exit(-1)
+
+    solution = parseInput(sys.argv[1])
+
+    printPuzzle(solution)
+
+    #write the solution to a file
+
+if __name__ == "__main__":
+    main()
