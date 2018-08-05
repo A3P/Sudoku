@@ -27,7 +27,7 @@ def base9To10(i,j,k):
 #Clauses for the preset cells set by the input file
 def genInitialVars(puzzle):
     global n
-    string = "(Initial Clauses)\n";
+    string = ""
     for i in range(9):
         for j in range(9):
             c = puzzle[i*9+j]
@@ -39,7 +39,7 @@ def genInitialVars(puzzle):
 #Clauses ensuring each cell has a number
 def genCellVars():
     global n
-    string = "(Cell Clauses)\n"
+    string = ""
     for i in range(9):
         for j in range(9):
             for k in range(9):
@@ -51,7 +51,7 @@ def genCellVars():
 #Clauses ensuring uniqueness through rows
 def genRowVars():
     global n
-    string = "(Row Clauses)\n"
+    string = ""
     for j in range(9):
         for k in range(9):
             for i in range(8):
@@ -63,7 +63,7 @@ def genRowVars():
 #Clauses ensuring uniqueness through columns
 def genColVars():
     global n
-    string = "(Column Clauses)\n"
+    string = ""
     for i in range(9):
         for k in range(9):
             for j in range(8):
@@ -75,7 +75,7 @@ def genColVars():
 #Clauses ensuring uniqueness through 3x3 sub-grids
 def genSubGridVars():
     global n
-    string = "(Sub-Grid Clauses)\n"
+    string = ""
     for k in range(9): #number
         for a in range(3): #grid - x
             for b in range(3): #grid - y
