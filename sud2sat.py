@@ -30,7 +30,7 @@ def base9To10(i,j,k):
 
 #Clauses for the preset cells set by the input file
 def genInitialVars(puzzle):
-    global n
+    global n, gsat
     string = ""
     for i in range(9):
         for j in range(9):
@@ -62,7 +62,7 @@ def genCellVars():
 
 #Clauses ensuring uniqueness through rows
 def genRowVars():
-    global n
+    global n, gsat
     string = ""
     for j in range(9):
         for k in range(9):
@@ -77,7 +77,7 @@ def genRowVars():
 
 #Clauses ensuring uniqueness through columns
 def genColVars():
-    global n
+    global n, gsat
     string = ""
     for i in range(9):
         for k in range(9):
@@ -92,7 +92,7 @@ def genColVars():
 
 #Clauses ensuring uniqueness through 3x3 sub-grids
 def genSubGridVars():
-    global n
+    global n, gsat
     string = ""
     for k in range(9): #number
         for a in range(3): #grid - x
@@ -125,7 +125,7 @@ def genSubGridVars():
 # Extended Encoding
 
 def cellMostOnce():
-    global n
+    global n, gsat
     string = ""
     for x in range(9):
         for y in range(9):
@@ -141,7 +141,7 @@ def cellMostOnce():
     return string
 
 def rowLeastOnce():
-    global n
+    global n, gsat
     string = ""
     for y in range(9):
         for z in range(9):
@@ -157,7 +157,7 @@ def rowLeastOnce():
     return string
 
 def colLeastOnce():
-    global n
+    global n, gsat
     string = ""
     for x in range(9):
         for z in range(9):
@@ -174,7 +174,7 @@ def colLeastOnce():
 
 
 def subGridLeastOnce():
-    global n
+    global n, gsat
     string = ""
     for z in range(9):
         for i in range(3):
@@ -193,6 +193,8 @@ def subGridLeastOnce():
 
 
 def main():
+    global gsat
+    
     if len(sys.argv) < 2:
         print("Provide an input file")
         sys.exit(-1)
