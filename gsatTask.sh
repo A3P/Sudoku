@@ -15,16 +15,14 @@ python3 sud2sat.py grid.txt -gsat > sat.txt
 Gsat/make
 Gsat/gsat <<eof
 sat.txt
-solution.txt
+solution2.txt
 report.txt
-#flips
-#tries
 
 
 
 eof
 
-    python3 sat2sud.py solution.txt >> basicTaskOut.txt
+    python3 sat2sud.py solution2.txt >> basicTaskOut.txt
     cat time.txt >> basicTaskOut.txt
     echo $'\n' >> basicTaskOut.txt
     cat time.txt >> timeList.txt
@@ -38,8 +36,8 @@ do
     echo "Grid $((grid))" >> task1Output.txt
     sed -n $((grid))p task1Input.txt > grid.txt
     python3 sud2sat.py grid.txt -gsat > sat.txt
-    Gsat/gsat sat.txt solution.txt | grep CPU > time.txt
-    python3 sat2sud.py solution.txt >> task1Output.txt
+    Gsat/gsat sat.txt solution2.txt | grep CPU > time.txt
+    python3 sat2sud.py solution2.txt >> task1Output.txt
     cat time.txt >> task1Output.txt
     echo $'\n' >> task1Output.txt
     cat time.txt >> timeList.txt
