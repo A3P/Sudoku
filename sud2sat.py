@@ -1,3 +1,7 @@
+# 
+# Usage: python3 sud2sat.py <in.txt> [-extended]
+# 
+
 import sys
 import os
 
@@ -55,7 +59,7 @@ def genRowVars():
         for k in range(9):
             for i in range(8):
                 for l in range(i+1,9):
-                    string += '-' + str(base9To10(i,j,k)) + " -" + str(base9To10(l,j,k)) + " 0\n"
+                    string += '-' + str(base9To10(j,i,k)) + " -" + str(base9To10(j,l,k)) + " 0\n"
                     n += 1
     return string
 
@@ -67,7 +71,7 @@ def genColVars():
         for k in range(9):
             for j in range(8):
                 for l in range(j+1,9):
-                    string += '-' + str(base9To10(i,j,k)) + " -" + str(base9To10(i,l,k)) + " 0\n"
+                    string += '-' + str(base9To10(j,i,k)) + " -" + str(base9To10(l,i,k)) + " 0\n"
                     n += 1
     return string
 
@@ -75,6 +79,17 @@ def genColVars():
 def genSubGridVars():
     global n
     string = ""
+    for k in range(9): #number
+        for a in range(3): #grid - x
+            for b in range(3): #grid - y
+                for u in range(3): #cell - x
+                    for v in range(3): #cell - y
+                        for w in range(v +1,3): #check cell - x
+                                string += '-' + str(base9To10(3*a+u,3*b+v,k)) + " -" + str(base9To10(3*a+u,3*b+w,k)) + " 0\n"
+                                n += 1
+
+
+
     for k in range(9): #number
         for a in range(3): #grid - x
             for b in range(3): #grid - y
@@ -86,8 +101,59 @@ def genSubGridVars():
                                 n += 1
     return string
 
+# Extended Encoding
+
+def cellMostOnce():
+    global n
+    string = ""
+    for x in range(9):
+        for y in range(9):
+            for z in range(8):
+                for i in range(z+1, 9):
+                    string += "-" + str(base9To10(x,y,z))
+                    string += " -" + str(base9To10(x,y,i)) + " 0\n"
+                    n+=1
+    return string
+
+def rowLeastOnce():
+    global n
+    string = ""
+    for y in range(9):
+        for z in range(9):
+            for x in range(9):
+                string+= str(base9To10(x,y,z)) + " "
+            string += "0\n"
+            n+=1
+    return string
+
+def colLeastOnce():
+    global n
+    string = ""
+    for x in range(9):
+        for z in range(9):
+            for y in range(9):
+                string+= str(base9To10(x,y,z)) + " "
+            string += "0\n"
+            n+=1
+    return string
+
+
+def subGridLeastOnce():
+    global n
+    string = ""
+    for z in range(9):
+        for i in range(3):
+            for j in range(3):
+                for x in range(3):
+                    for y in range(3):
+                        string += str(base9To10(3*i+x,3*j+y,z)) + " "
+                string += "0\n"
+                n+=1
+    return string
+
+
 def main():
-    if len(sys.argv) < 1:
+    if len(sys.argv) < 2:
         print("Provide an input file")
         sys.exit(-1)
 
@@ -95,7 +161,15 @@ def main():
 
     dimacs_string = genInitialVars(puzzle) + genCellVars() + genRowVars() + genColVars() + genSubGridVars()
 
+    if len(sys.argv) >= 3 and sys.argv[2] == "-extended":
+        dimacs_string += cellMostOnce()
+        dimacs_string += rowLeastOnce()
+        dimacs_string += colLeastOnce()
+        dimacs_string += subGridLeastOnce()
+    
     print("p cnf 729 " + str(n) + "\n" + dimacs_string)
+    
+    
 
 if __name__ == "__main__":
     main()
