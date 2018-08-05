@@ -1,12 +1,13 @@
-# 
+#
 # Usage: python3 sud2sat.py <in.txt> [-extended]
-# 
+#
 
 import sys
 import os
 
 FILE = 0
 n = 0
+gsat = 0
 
 #Parse and format input file to an array
 def parsePuzzle(input_file):
@@ -35,7 +36,10 @@ def genInitialVars(puzzle):
         for j in range(9):
             c = puzzle[i*9+j]
             if c != '0':
-                string += str(base9To10(i,j,int(c)-1)) + ' 0\n'
+                if gsat:
+                    string += "( " + str(base9To10(i,j,int(c)-1)) + " )\n"
+                else:
+                    string += str(base9To10(i,j,int(c)-1)) + ' 0\n'
                 n += 1
     return string
 
@@ -45,9 +49,14 @@ def genCellVars():
     string = ""
     for i in range(9):
         for j in range(9):
+            if gsat:
+                string += "( "
             for k in range(9):
                 string += str(base9To10(i,j,k)) + ' '
-            string  += "0\n"
+            if gsat:
+                string += ")\n"
+            else:
+                string  += "0\n"
             n += 1
     return string
 
@@ -59,7 +68,10 @@ def genRowVars():
         for k in range(9):
             for i in range(8):
                 for l in range(i+1,9):
-                    string += '-' + str(base9To10(j,i,k)) + " -" + str(base9To10(j,l,k)) + " 0\n"
+                    if gsat:
+                        string += "( " + '-' + str(base9To10(j,i,k)) + " -" + str(base9To10(j,l,k)) + " )\n"
+                    else:
+                        string += '-' + str(base9To10(j,i,k)) + " -" + str(base9To10(j,l,k)) + " 0\n"
                     n += 1
     return string
 
@@ -71,7 +83,10 @@ def genColVars():
         for k in range(9):
             for j in range(8):
                 for l in range(j+1,9):
-                    string += '-' + str(base9To10(j,i,k)) + " -" + str(base9To10(l,i,k)) + " 0\n"
+                    if gsat:
+                        string += "( " + '-' + str(base9To10(j,i,k)) + " -" + str(base9To10(l,i,k)) + " )\n"
+                    else:
+                        string += '-' + str(base9To10(j,i,k)) + " -" + str(base9To10(l,i,k)) + " 0\n"
                     n += 1
     return string
 
@@ -85,8 +100,11 @@ def genSubGridVars():
                 for u in range(3): #cell - x
                     for v in range(3): #cell - y
                         for w in range(v +1,3): #check cell - x
+                            if gsat:
+                                string += "( " + '-' + str(base9To10(3*a+u,3*b+v,k)) + " -" + str(base9To10(3*a+u,3*b+w,k)) + " )\n"
+                            else:
                                 string += '-' + str(base9To10(3*a+u,3*b+v,k)) + " -" + str(base9To10(3*a+u,3*b+w,k)) + " 0\n"
-                                n += 1
+                            n += 1
 
 
 
@@ -97,7 +115,10 @@ def genSubGridVars():
                     for v in range(3): #cell - y
                         for w in range(u+1,3): #check cell - x
                             for t in range(3): #check cell - y
-                                string += '-' + str(base9To10(3*a+u,3*b+v,k)) + " -" + str(base9To10(3*a+w,3*b+t,k)) + " 0\n"
+                                if gsat:
+                                    string += "( " + '-' + str(base9To10(3*a+u,3*b+v,k)) + " -" + str(base9To10(3*a+w,3*b+t,k)) + " )\n"
+                                else:
+                                    string += '-' + str(base9To10(3*a+u,3*b+v,k)) + " -" + str(base9To10(3*a+w,3*b+t,k)) + " 0\n"
                                 n += 1
     return string
 
@@ -110,8 +131,12 @@ def cellMostOnce():
         for y in range(9):
             for z in range(8):
                 for i in range(z+1, 9):
-                    string += "-" + str(base9To10(x,y,z))
-                    string += " -" + str(base9To10(x,y,i)) + " 0\n"
+                    if gsat:
+                        string += "( " + "-" + str(base9To10(x,y,z))
+                        string += " -" + str(base9To10(x,y,i)) + " )\n"
+                    else:
+                        string += "-" + str(base9To10(x,y,z))
+                        string += " -" + str(base9To10(x,y,i)) + " 0\n"
                     n+=1
     return string
 
@@ -120,9 +145,14 @@ def rowLeastOnce():
     string = ""
     for y in range(9):
         for z in range(9):
+            if gsat:
+                string += "( "
             for x in range(9):
                 string+= str(base9To10(x,y,z)) + " "
-            string += "0\n"
+            if gsat:
+                string += ")\n"
+            else:
+                string += "0\n"
             n+=1
     return string
 
@@ -131,9 +161,14 @@ def colLeastOnce():
     string = ""
     for x in range(9):
         for z in range(9):
+            if gsat:
+                string += "( "
             for y in range(9):
                 string+= str(base9To10(x,y,z)) + " "
-            string += "0\n"
+            if gsat:
+                string += ")\n"
+            else:
+                string += "0\n"
             n+=1
     return string
 
@@ -144,10 +179,15 @@ def subGridLeastOnce():
     for z in range(9):
         for i in range(3):
             for j in range(3):
+                if gsat:
+                    string += "( "
                 for x in range(3):
                     for y in range(3):
                         string += str(base9To10(3*i+x,3*j+y,z)) + " "
-                string += "0\n"
+                if gsat:
+                    string += ")\n"
+                else:
+                    string += "0\n"
                 n+=1
     return string
 
@@ -156,6 +196,9 @@ def main():
     if len(sys.argv) < 2:
         print("Provide an input file")
         sys.exit(-1)
+
+    if (len(sys.argv) >= 3 and sys.argv[2] == "-gsat") or (len(sys.argv) >= 4 and sys.argv[3] == "-gsat"):
+        gsat = 1;
 
     puzzle = parsePuzzle(sys.argv[1])
 
@@ -166,10 +209,13 @@ def main():
         dimacs_string += rowLeastOnce()
         dimacs_string += colLeastOnce()
         dimacs_string += subGridLeastOnce()
-    
-    print("p cnf 729 " + str(n) + "\n" + dimacs_string)
-    
-    
+
+    if gsat:
+        print(dimacs_string)
+    else:
+        print("p cnf 729 " + str(n) + "\n" + dimacs_string)
+
+
 
 if __name__ == "__main__":
     main()
