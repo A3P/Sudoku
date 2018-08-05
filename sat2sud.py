@@ -10,7 +10,16 @@ def parseInput(input_file):
 
     content = open_file.read().split()
 
-    if content[0] != "SAT":
+    if content[0] == ";;;":
+        solved = content[content.index("*gsat-best-num-bad*")+1] == "0)"
+        if not solved:
+            print("No solution")
+            sys.exit(-1)
+        content = " ".join(content)
+        content = content.split(";;;")[2:]
+        content = " ".join(content).split()
+
+    elif content[0] != "SAT":
         print("No solution")
         sys.exit(-1)
 
