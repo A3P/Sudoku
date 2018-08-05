@@ -16,8 +16,7 @@ def parsePuzzle(input_file):
     for line in open_file.readlines():
         puzzle_string += ''.join(line.split())
 
-    puzzle_string.replace('.', '0').replace('*', '0').replace('?', '0')
-
+    puzzle_string = puzzle_string.replace('.', '0').replace('*', '0').replace('?', '0')
     return puzzle_string
 
 #Converts base 9 ijk to base 10 + 1
